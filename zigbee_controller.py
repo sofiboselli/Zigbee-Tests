@@ -88,14 +88,15 @@ class ZigbeeController():
 
 
     async def IASZoneEnroll(self, cluster):
-        ieee = 3781220875909033
-        try:
-            res = await cluster.write_attributes({"cie_addr": ieee})
-        except ZigbeeException as ex:
-            #LOGGER.info("ERROR OCCURRED: %s",str(ex))
-            LOGGER.info("ERROR OCCURRED")
+        ieee = [ 0x00, 0x0D, 0x6F, 0x00, 0x17, 0x20, 0x37,0xA9]
+        #ieee = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00] 
+        await cluster.bind()
+
+        res = await cluster.write_attributes({"cie_addr": ieee})
+        LOGGER.info("wrote cie_addr: %s to '%s' cluster: %s", str(ieee), cluster.ep_attribute, res[0])
+
         LOGGER.info("Sending IAS enroll response")
-        cluster.create_catching_task(cluster.enroll_response(0,0))
+        await cluster.enroll_response(0,0)
 
 
 
@@ -114,6 +115,7 @@ class ZigbeeController():
                     state = []
                     for x in v[0]:
                         state.append({"attribute": x, "value": v[0][x]})
+                        LOGGER.info("%s=%s", x,v[0][x]) 
                     cluster_states.append({"cluster_id":cluster_id, "state":state})
         return cluster_states
 
