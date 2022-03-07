@@ -88,29 +88,27 @@ class ZigbeeController():
 
 
     async def IASZoneEnroll(self, cluster):
-        ieee = [ 0x00, 0x0D, 0x6F, 0x00, 0x17, 0x20, 0x37,0xA9]
-        #ieee = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00] 
         await cluster.bind()
-
+        ieee = self.app.ieee
         res = await cluster.write_attributes({"cie_addr": ieee})
         LOGGER.info("wrote cie_addr: %s to '%s' cluster: %s", str(ieee), cluster.ep_attribute, res[0])
 
         LOGGER.info("Sending IAS enroll response")
-        await cluster.enroll_response(0,0)
-
+        v=await getattr(cluster, "enroll_response")(0,0)
+        LOGGER.info(v) 
 
 
     async def get_state_by_ieee(self, device_ieee):
         cluster_states = []
-        supported_clusters = {6: [0], 8:[0], 768: [0,1,3,4,7], 1280: [0]}
+        supported_clusters = {6: [0], 8:[0], 768: [0,1,3,4,7], 1026:[0], 1280: [0,1,2]}
         device = self._get_device_by_ieee(device_ieee)
         for epid, ep in device.endpoints.items():
             if epid == 0 or not hasattr(ep, "in_clusters"):
                 continue
             for cluster_id, cluster in ep.in_clusters.items():
                 if cluster_id in supported_clusters:
-                    if cluster_id == 1280:
-                        await self.IASZoneEnroll(cluster)
+                    if cluster_id == 1280 and False:
+                       await self.IASZoneEnroll(cluster)
                     v = await cluster.read_attributes(supported_clusters[cluster_id])
                     state = []
                     for x in v[0]:
