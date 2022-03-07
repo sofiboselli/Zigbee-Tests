@@ -1,4 +1,5 @@
 from bellows.ezsp import EZSP
+
 from bellows.zigbee.application import ControllerApplication
 from zigpy.exceptions import ZigbeeException
 import bellows
@@ -10,6 +11,8 @@ from zigpy import types as t
 import logging
 
 LOGGER = logging.getLogger(__name__)
+
+## logging.basicConfig(level=logging.DEBUG)  ## UNCOMMENT FOR FULL LOG
 
 APP_CONFIG = {bellows.config.CONF_DEVICE: {bellows.config.CONF_DEVICE_PATH: "/dev/ttyUSB1",
                                            bellows.config.CONF_DEVICE_BAUDRATE: 57600, },
@@ -107,11 +110,13 @@ class ZigbeeController():
                 continue
             for cluster_id, cluster in ep.in_clusters.items():
                 if cluster_id in supported_clusters:
-                    if cluster_id == 1280 and False:
-                       await self.IASZoneEnroll(cluster)
                     v = await cluster.read_attributes(supported_clusters[cluster_id])
                     state = []
                     for x in v[0]:
+                        if cluster_id == 1280 and x == 0:
+                            if v[0][x] == 0:
+                                await self.IASZoneEnroll(cluster)
+                                v = await cluster.read_attributes(supported_clusters[cluster_id])
                         state.append({"attribute": x, "value": v[0][x]})
                         LOGGER.info("%s=%s", x,v[0][x]) 
                     cluster_states.append({"cluster_id":cluster_id, "state":state})
