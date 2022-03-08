@@ -12,7 +12,7 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
-## logging.basicConfig(level=logging.DEBUG)  ## UNCOMMENT FOR FULL LOG
+##logging.basicConfig(level=logging.DEBUG)  ## UNCOMMENT FOR FULL LOG
 
 APP_CONFIG = {bellows.config.CONF_DEVICE: {bellows.config.CONF_DEVICE_PATH: "/dev/ttyUSB1",
                                            bellows.config.CONF_DEVICE_BAUDRATE: 57600, },
