@@ -12,7 +12,7 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
-##logging.basicConfig(level=logging.DEBUG)  ## UNCOMMENT FOR FULL LOG
+#logging.basicConfig(level=logging.DEBUG)  ## UNCOMMENT FOR FULL LOG
 
 APP_CONFIG = {bellows.config.CONF_DEVICE: {bellows.config.CONF_DEVICE_PATH: "/dev/ttyUSB1",
                                            bellows.config.CONF_DEVICE_BAUDRATE: 57600, },
@@ -68,8 +68,7 @@ class ZigbeeController():
         raise Exception("Device does not support command %s!" % (command,))
 
     def get_devices(self):
-        devices = []
-
+        devices = {"devices":[]}
         for ieee, dev in self.app.devices.items():
             device = {
                 "ieee": self._ieee_to_number(ieee),
@@ -81,12 +80,13 @@ class ZigbeeController():
                     continue
                 device["endpoints"].append({
                     "id": epid,
+                    "device_type": ep.device_type if hasattr(ep, "device_type") else "",
                     "input_clusters": [in_cluster for in_cluster in ep.in_clusters] if hasattr(ep, "in_clusters") else [],
                     "output_clusters": [out_cluster for out_cluster in ep.out_clusters] if hasattr(ep, "out_clusters") else [],
                     "status": "uninitialized" if ep.status == zigpy.endpoint.Status.NEW else "initialized"
                 })
 
-            devices.append(device)
+            devices["devices"].append(device)
         return devices
 
 
@@ -102,7 +102,7 @@ class ZigbeeController():
 
 
     async def get_state_by_ieee(self, device_ieee):
-        cluster_states = []
+        cluster_states = {"address":device_ieee, "state":[]}
         supported_clusters = {6: [0], 8:[0], 768: [0,1,3,4,7], 1026:[0], 1280: [0,1,2]}
         device = self._get_device_by_ieee(device_ieee)
         for epid, ep in device.endpoints.items():
@@ -119,7 +119,7 @@ class ZigbeeController():
                                 v = await cluster.read_attributes(supported_clusters[cluster_id])
                         state.append({"attribute": x, "value": v[0][x]})
                         LOGGER.info("%s=%s", x,v[0][x]) 
-                    cluster_states.append({"cluster_id":cluster_id, "state":state})
+                    cluster_states["state"].append({"cluster_id":cluster_id, "state":state})
         return cluster_states
 
     async def send_command(self, device_ieee, command, params=""):
@@ -127,4 +127,6 @@ class ZigbeeController():
         LOGGER.info("sending command %s to device %s" % (command, device_ieee))
         v=await getattr(self._get_cluster_by_command(device, command), command)(*params)
         LOGGER.info(v)
+        result = {"command_status":v[1]}
+        print(result)
 

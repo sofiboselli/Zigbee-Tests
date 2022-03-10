@@ -1,0 +1,15 @@
+DEBUG:bellows.ezsp.protocol:Application frame 69 (incomingMessageHandler) received: b'0004010005010140010000b8ffcf2e6bffff09097600210000000000'
+DEBUG:bellows.zigbee.application:Received incomingMessageHandler frame with [<EmberIncomingMessageType.INCOMING_UNICAST: 0>, EmberApsFrame(profileId=260, clusterId=1280, sourceEndpoint=1, destinationEndpoint=1, options=<EmberApsOption.APS_OPTION_ENABLE_ROUTE_DISCOVERY|APS_OPTION_RETRY: 320>, groupId=0, sequence=184), 255, -49, 0x6b2e, 255, 255, b'\tv\x00!\x00\x00\x00\x00\x00']
+DEBUG:zigpy.zcl:[0x6b2e:1:0x0500] ZCL deserialize: <ZCLHeader frame_control=<FrameControl frame_type=CLUSTER_COMMAND manufacturer_specific=False is_reply=True disable_default_response=False> manufacturer=None tsn=118 command_id=0>
+DEBUG:zigpy.zcl:[0x6b2e:1:0x0500] ZCL request 0x0000: [<ZoneStatus.Restore_reports|Alarm_1: 33>, <bitmap8.0: 0>, 0, 0]
+<ZCLHeader frame_control=<FrameControl frame_type=CLUSTER_COMMAND manufacturer_specific=False is_reply=False disable_default_response=False> manufacturer=None tsn=118 command_id=0>
+DEBUG:bellows.ezsp.protocol:Send command sendUnicast: (<EmberOutgoingMessageType.OUTGOING_DIRECT: 0>, 0x6B2E, EmberApsFrame(profileId=260, clusterId=1280, sourceEndpoint=1, destinationEndpoint=1, options=<EmberApsOption.APS_OPTION_ENABLE_ROUTE_DISCOVERY|APS_OPTION_RETRY: 320>, groupId=0, sequence=118), 5, b'\x18v\x0b\x00\x00')
+DEBUG:bellows.uart:Sending: b'527f219c54047d5eb658944f24ab1593499c3822aef5b86c8bfd87067e'
+DEBUG:bellows.uart:Data frame: b'267fa19c54fcb3f47e'
+DEBUG:bellows.uart:Sending: b'83401b7e'
+DEBUG:bellows.ezsp.protocol:Application frame 52 (sendUnicast) received: b'00d6'
+DEBUG:bellows.uart:Data frame: b'367fb19754047eb658944f24ab1593499c9822abed66b67e'
+DEBUG:bellows.uart:Sending: b'8430fc7e'
+DEBUG:bellows.ezsp.protocol:Application frame 63 (messageSentHandler) received: b'002e6b04010005010140010000d6050000'
+DEBUG:bellows.zigbee.application:Received messageSentHandler frame with [<EmberOutgoingMessageType.OUTGOING_DIRECT: 0>, 27438, EmberApsFrame(profileId=260, clusterId=1280, sourceEndpoint=1, destinationEndpoint=1, options=<EmberApsOption.APS_OPTION_ENABLE_ROUTE_DISCOVERY|APS_OPTION_RETRY: 320>, groupId=0, sequence=214), 5, <EmberStatus.SUCCESS: 0>, b'']
+

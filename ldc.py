@@ -1,11 +1,13 @@
 from zigbee_controller import ZigbeeController
 import asyncio
 import json
+import readline
+import aioconsole
 
 
 zigbee_controller = ZigbeeController()
 
-command_description = {'join': 'allow devices to pair for 60 seconds.', 'devices': 'list of devices with ieee, endpoints and clusters.', 'state': 'state of each supported cluster and attribute of defined ieee. Usage: state {ieee}', 'command': 'fires command on defined ieee with defined parameters. Usage: command {ieee} {command} {params}'}
+command_description = {'join': 'allow devices to pair for 60 seconds.', 'devices': 'list of devices with ieee, endpoints and clusters.', 'state': 'state of each supported cluster and attribute of defined ieee. address needed', 'command': 'fires command on defined ieee with defined parameters. Address, command and parameters needed.'}
 
 async def permit_join(ieee=None, command=None, params=None):
     print("Devices can join for the next 60 seconds")
@@ -24,6 +26,7 @@ async def fire_command(ieee=None, command=None, params=None):
 
 def help():
     print("ZIGBEE COMMAND LINE:")
+    print("Accepts: {\"command\":{zigbee_command}, \"address\":{address}, \"attributes\":{\"command\":{command}, \"params\":{parameters}}}")
     print("Available commands:")
     for command, description in command_description.items():
         print("- "+command+":", description)
@@ -32,27 +35,19 @@ zigbee_functions = {'join':permit_join, 'devices':get_devices, 'state':get_state
 
 async def input_loop():
     while True:
-        line = input('>')
-        print(line)
+        #line = input('>')
+        line = await aioconsole.ainput('>')
         data = json.loads(line)
         ieee = data['address'] if 'address' in data.keys() else None
         command = data['attributes']['command'] if 'attributes' in data.keys() else None
-        params = data['attributes']['params'] if 'attributes' in data.keys() else []
+        params = data['attributes']['params'] if 'attributes' in data.keys() and 'params' in data['attributes'].keys() else []
         zigbee_command = data['command'] if 'command' in data.keys() else None
-        #data = line.split()
-        #for x in range(len(data)):
-        #    if x == 0:
-        #        zigbee_command = data[x]
-        #    elif x == 1:
-        #        ieee = int(data[x])
-        #    elif x == 2:
-        #        command = data[x]
-        #    else:
-        #        params.append(int(data[x]))
         if zigbee_command in zigbee_functions:
             await zigbee_functions[zigbee_command](ieee, command, params)
 
 help()
+readline.parse_and_bind('tab: complete')
+readline.parse_and_bind('set editing-mode vi')
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
